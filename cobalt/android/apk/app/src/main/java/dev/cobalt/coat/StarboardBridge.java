@@ -35,15 +35,19 @@ import androidx.annotation.Nullable;
 import dev.cobalt.media.AudioOutputManager;
 import dev.cobalt.shell.StartupGuard;
 import dev.cobalt.util.Holder;
+import dev.cobalt.util.Log;
+import static dev.cobalt.util.Log.TAG;
 import org.chromium.content_public.browser.WebContents;
+import org.jni_zero.CalledByNative;
 
 /** Content-dependent StarboardBridge subclass used by AndroidTV. */
 public class StarboardBridge extends BaseStarboardBridge {
 
   /** Interface to be implemented by the Android Application hosting the starboard app. */
-  public interface HostApplication {
+  public interface HostApplication extends BaseStarboardBridge.HostApplication {
     void setStarboardBridge(StarboardBridge starboardBridge);
 
+    @Override
     StarboardBridge getStarboardBridge();
   }
 
@@ -259,27 +263,6 @@ public class StarboardBridge extends BaseStarboardBridge {
     float ratio = refreshRate / fps;
     float nearestInt = Math.round(ratio);
     return Math.abs(ratio - nearestInt) < (tolerance / fps);
-  }
-
-  /** A wrapper of the android.util.Size class to be used by JNI. */
-  public static class Size {
-    private final int mWidth;
-    private final int mHeight;
-
-    public Size(int width, int height) {
-      mWidth = width;
-      mHeight = height;
-    }
-
-    @CalledByNative("Size")
-    public int getWidth() {
-      return mWidth;
-    }
-
-    @CalledByNative("Size")
-    public int getHeight() {
-      return mHeight;
-    }
   }
 
   @Override

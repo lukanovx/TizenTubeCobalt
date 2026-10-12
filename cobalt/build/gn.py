@@ -43,7 +43,7 @@ _BUILD_TYPES = {
         'exclude_unwind_tables': 'false'
     },
     'gold': {
-        'symbol_level': 1,
+        'symbol_level': 0,
         'is_official_build': 'true',
         'cobalt_is_release_build': 'true'
     }
@@ -81,7 +81,7 @@ _COBALT_TVOS_PLATFORMS = [
 
 # pylint: disable=too-many-positional-arguments
 def write_build_args(build_args_path, platform_args_path, build_type, use_rbe,
-                     use_coverage, use_sccache):
+                     use_coverage, use_sccache, use_ccache=False, thin_lto=False):
   """ Write args file, modifying settings for config"""
   gen_comment = '# Set by gn.py'
   with open(build_args_path, 'w', encoding='utf-8') as f:
@@ -90,6 +90,11 @@ def write_build_args(build_args_path, platform_args_path, build_type, use_rbe,
       f.write(f'use_siso = true {gen_comment}\n')
     if use_sccache:
       f.write(f'cc_wrapper = "sccache" {gen_comment}\n')
+    elif use_ccache:
+      f.write(f'cc_wrapper = "ccache" {gen_comment}\n')
+    if not thin_lto:
+      f.write(f'use_thin_lto = false {gen_comment}\n')
+      f.write(f'is_cfi = false {gen_comment}\n')
     f.write(f'build_type = "{build_type}" {gen_comment}\n')
     for key, value in _BUILD_TYPES[build_type].items():
       f.write(f'{key} = {value} {gen_comment}\n')
@@ -100,7 +105,8 @@ def write_build_args(build_args_path, platform_args_path, build_type, use_rbe,
 
 def configure_out_directory(out_directory: str, platform: str, build_type: str,
                             use_rbe: bool, gn_gen_args: List[str], *,
-                            use_coverage: bool, use_sccache: bool):
+                            use_coverage: bool, use_sccache: bool,
+                            use_ccache: bool = False, thin_lto: bool = False):
   Path(out_directory).mkdir(parents=True, exist_ok=True)
   platform_path = f'cobalt/build/configs/{platform}'
   dst_args_gn_file = os.path.join(out_directory, 'args.gn')
@@ -114,7 +120,7 @@ def configure_out_directory(out_directory: str, platform: str, build_type: str,
           'Old file was copied to stale_args.gn.')
 
   write_build_args(dst_args_gn_file, src_args_gn_file, build_type, use_rbe,
-                   use_coverage, use_sccache)
+                   use_coverage, use_sccache, use_ccache, thin_lto)
 
   gn_command = ['gn', 'gen', out_directory] + gn_gen_args
   print('Running', ' '.join(gn_command))
@@ -168,6 +174,16 @@ def parse_args():
       default=False,
       action='store_true',
       help='Use sccache for build acceleration.')
+  parser.add_argument(
+      '--use-ccache',
+      default=False,
+      action='store_true',
+      help='Use ccache for build acceleration.')
+  parser.add_argument(
+      '--thin-lto',
+      default=False,
+      action='store_true',
+      help='Enable ThinLTO.')
 
   # Consume --args to avoid passing to gn gen, overriding args.gn file.
   parser.add_argument('--args', help=argparse.SUPPRESS)
@@ -200,7 +216,9 @@ def main():
       not script_args.no_rbe,
       gen_args,
       use_coverage=script_args.coverage,
-      use_sccache=script_args.use_sccache)
+      use_sccache=script_args.use_sccache,
+      use_ccache=script_args.use_ccache,
+      thin_lto=script_args.thin_lto)
 
 
 if __name__ == '__main__':

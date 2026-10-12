@@ -15,6 +15,7 @@
 package org.chromium.content_browsertests_apk;
 
 import android.content.Context;
+import dev.cobalt.coat.BaseStarboardBridge;
 import dev.cobalt.coat.StarboardBridge;
 import org.chromium.base.PathUtils;
 import org.chromium.native_test.NativeBrowserTestApplication;
@@ -26,6 +27,13 @@ public class ContentBrowserTestsApplication extends NativeBrowserTestApplication
   static final String PRIVATE_DATA_DIRECTORY_SUFFIX = "content_shell";
 
   private StarboardBridge mStarboardBridge;
+
+  @Override
+  public void setStarboardBridge(BaseStarboardBridge starboardBridge) {
+    if (starboardBridge instanceof StarboardBridge) {
+      mStarboardBridge = (StarboardBridge) starboardBridge;
+    }
+  }
 
   @Override
   public void setStarboardBridge(StarboardBridge starboardBridge) {

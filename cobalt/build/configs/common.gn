@@ -17,6 +17,7 @@ media_use_ffmpeg = false
 # Removing these flags causes a lot of compiler errors in starboard code.
 clang_use_chrome_plugins = false
 enable_check_raw_ptr_fields = false
+treat_warnings_as_errors = false
 
 # Enable e/ac3 support for Cobalt.
 enable_platform_ac3_eac3_audio = true

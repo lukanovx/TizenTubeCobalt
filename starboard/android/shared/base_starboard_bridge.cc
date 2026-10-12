@@ -35,6 +35,7 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "cobalt/android/jni_headers/BaseStarboardBridge_jni.h"
+#include "cobalt/android/jni_headers/StarboardBridge_jni.h"
 
 namespace starboard {
 

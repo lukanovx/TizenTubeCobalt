@@ -16,6 +16,7 @@ package dev.cobalt.app;
 
 import android.app.Application;
 import android.content.Context;
+import dev.cobalt.coat.BaseStarboardBridge;
 import dev.cobalt.coat.StarboardBridge;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
@@ -28,6 +29,13 @@ public class CobaltApplication extends Application implements StarboardBridge.Ho
   private static final String PRIVATE_DATA_DIRECTORY_SUFFIX = "content_shell";
 
   StarboardBridge mStarboardBridge;
+
+  @Override
+  public void setStarboardBridge(BaseStarboardBridge starboardBridge) {
+    if (starboardBridge instanceof StarboardBridge) {
+      mStarboardBridge = (StarboardBridge) starboardBridge;
+    }
+  }
 
   @Override
   public void setStarboardBridge(StarboardBridge starboardBridge) {

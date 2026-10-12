@@ -91,7 +91,7 @@ public class BaseStarboardBridge {
   private final AudioPermissionRequester mAudioPermissionRequester;
   private final ResourceOverlay mResourceOverlay;
   private final AdvertisingId mAdvertisingId;
-  private final Context mAppContext;
+  protected final Context mAppContext;
   protected final Holder<Activity> mActivityHolder;
   private final Holder<Service> mServiceHolder;
   // Maps each live Activity to whether it is currently started (Boolean.TRUE) or stopped

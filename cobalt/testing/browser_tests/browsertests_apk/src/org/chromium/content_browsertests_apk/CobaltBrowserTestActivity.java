@@ -18,6 +18,7 @@ import android.app.Activity;
 import android.app.Service;
 import android.view.Window;
 import android.view.WindowManager;
+import dev.cobalt.coat.BaseStarboardBridge;
 import dev.cobalt.coat.StarboardBridge;
 import dev.cobalt.shell.ShellManager;
 import dev.cobalt.util.Holder;
@@ -40,6 +41,13 @@ public abstract class CobaltBrowserTestActivity extends NativeBrowserTestActivit
   private ShellManager mShellManager;
   private WindowAndroid mWindowAndroid;
   private StarboardBridge mStarboardBridge;
+
+  @Override
+  public void setStarboardBridge(BaseStarboardBridge starboardBridge) {
+    if (starboardBridge instanceof StarboardBridge) {
+      mStarboardBridge = (StarboardBridge) starboardBridge;
+    }
+  }
 
   @Override
   public void setStarboardBridge(StarboardBridge starboardBridge) {

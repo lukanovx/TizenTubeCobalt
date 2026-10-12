@@ -83,7 +83,10 @@ generate_jni("jni_headers") {
   }
 
   if (!is_starboard) {
-    sources += [ "apk/app/src/main/java/dev/cobalt/coat/PlatformError.java" ]
+    sources += [
+      "apk/app/src/main/java/dev/cobalt/coat/PlatformError.java",
+      "apk/app/src/main/java/dev/cobalt/coat/StarboardBridge.java",
+    ]
   }
 }
 
@@ -368,9 +371,9 @@ android_apk("cobalt_apk") {
   shared_libraries = [ ":libchrobalt" ]
   srcjar_deps = [ ":libchrobalt__jni_registration" ]
   include_size_info = is_official_build
-  version_code = "202"
-  version_name = "2.0.2"
-  keystore_path = "../../../../.android/debug.keystore"
+  version_code = "203"
+  version_name = "2.0.3"
+  keystore_path = "//.android/debug.keystore"
   keystore_name = "androiddebugkey"
   keystore_password = "android"
 }
