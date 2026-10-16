@@ -8,6 +8,7 @@
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/threading/platform_thread.h"
 #include "build/blink_buildflags.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
@@ -55,9 +56,15 @@ BASE_FEATURE_PARAM(int,
 
 // When enabled, image transfer cache entries bypass serialization and transfer
 // images directly to the GPU service thread in-process.
+// Disabled by default on Android and tvOS, enabled by default on other
+// platforms.
 BASE_FEATURE(kCobaltInProcessImageTransferCache,
              "CobaltInProcessImageTransferCache",
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS_TVOS)
              FEATURE_DISABLED_BY_DEFAULT);
+#else   // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS_TVOS)
+             FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS_TVOS)
 
 BASE_FEATURE(kCobaltCCImageCacheLimitItems,
              "CobaltCCImageCacheLimitItems",
@@ -68,6 +75,13 @@ BASE_FEATURE_PARAM(int,
                    &kCobaltCCImageCacheLimitItems,
                    "cc_image_cache_limit_items",
                    0);
+
+// Negative value means no byte limit is applied.
+BASE_FEATURE_PARAM(int,
+                   kCobaltCCImageCacheLimitItemsMbs,
+                   &kCobaltCCImageCacheLimitItems,
+                   "cc_image_cache_limit_mbs",
+                   -1);
 
 BASE_FEATURE(kCobaltForceGpuMemAvailable,
              "CobaltForceGpuMemAvailable",
@@ -168,6 +182,12 @@ BASE_FEATURE_PARAM(int,
                    &kCobaltMaxMemoryForPrepaint,
                    "max_memory_for_prepaint_percentage",
                    0);
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kCobaltAndroidDisplayCriticalInProcessRenderer,
+             "CobaltAndroidDisplayCriticalInProcessRenderer",
+             FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(IS_COBALT)
 
 // Controls caching within BASE_FEATURE_PARAM(). This is feature-controlled

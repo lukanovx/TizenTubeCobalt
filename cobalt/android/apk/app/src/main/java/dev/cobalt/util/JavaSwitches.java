@@ -66,12 +66,6 @@ public class JavaSwitches {
 
   public static final String ENABLE_LOW_END_DEVICE_MODE_SWITCH = "--enable-low-end-device-mode";
 
-  /** flag to enable deferred V8 bytecode serialization in background/idle */
-  public static final String DEFER_V8_CODE_CACHE_WRITE = "DeferV8CodeCacheWrite";
-
-  /** flag to re-enable freeze and resume events */
-  public static final String ENABLE_FREEZE = "EnableFreeze";
-
   public static final String USE_MINOR_MS_FOR_MINOR_GC = "UseMinorMSForMinorGC";
 
   /** flag to tune compositor offscreen interest area size in pixels. */
@@ -89,9 +83,6 @@ public class JavaSwitches {
 
   /** flag to limit GPU image cache bytes, resuing LimitImageDecodeCacheSizeMb */
   public static final String LIMIT_IMAGE_DECODE_CACHE_SIZE_MB = "LimitImageDecodeCacheSizeMb";
-
-  /** flag to globally configure max HTTP cache size ceiling in bytes. */
-  public static final String MAX_HTTP_CACHE_SIZE = "MaxHttpCacheSize";
 
   /** flag to limit GPU image cache working set budget bytes */
   public static final String DECODED_IMAGE_WORKING_SET_BUDGET_BYTES =
@@ -439,16 +430,6 @@ public class JavaSwitches {
 
     if (featureParams.length() > 0) {
       extraCommandLineArgs.add("--enable-features=SmallerInterestArea:" + featureParams.toString());
-    }
-
-    if (javaSwitches.containsKey(JavaSwitches.DEFER_V8_CODE_CACHE_WRITE)) {
-      extraCommandLineArgs.add("--defer-v8-code-cache-write");
-    }
-
-    String maxHttpCacheSize =
-        getSanitizedNumericValue(javaSwitches, JavaSwitches.MAX_HTTP_CACHE_SIZE);
-    if (maxHttpCacheSize != null) {
-      extraCommandLineArgs.add("--max-http-cache-size=" + maxHttpCacheSize);
     }
 
     if (jsFlags.length() > 0) {

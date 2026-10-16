@@ -14,6 +14,7 @@
 
 #include "cobalt/browser/cobalt_content_browser_client.h"
 
+#include <algorithm>
 #include <string>
 #include <variant>
 
@@ -204,6 +205,16 @@ static void JNI_CobaltContentBrowserClient_DispatchFocus(JNIEnv*) {
     return;
   }
   client->DispatchFocus();
+}
+
+static jboolean JNI_CobaltContentBrowserClient_IsFreezeOnBackgroundEnabled(
+    JNIEnv*) {
+  return base::FeatureList::IsEnabled(features::kCobaltFreezeOnBackground);
+}
+
+static jint JNI_CobaltContentBrowserClient_GetFreezeOnBackgroundDelayMs(
+    JNIEnv*) {
+  return std::max(0, features::kCobaltFreezeOnBackgroundDelayMs.Get());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -464,16 +475,18 @@ void CobaltContentBrowserClient::ConfigureNetworkContextParams(
         ComputeDefaultHttpCacheSize(kSbMaxSystemPathCacheDirectorySize));
   }
 
+#if BUILDFLAG(IS_ANDROID)
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          "max-http-cache-size")) {
+          switches::kMaxHttpCacheSize)) {
     std::string size_str =
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            "max-http-cache-size");
+            switches::kMaxHttpCacheSize);
     int parsed_size = 0;
     if (base::StringToInt(size_str, &parsed_size)) {
       network_context_params->http_cache_max_size = parsed_size;
     }
   }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(COBALT_IS_RELEASE_BUILD)
   cobalt::browser::ConfigureProxyFromCommandLineIfNeeded(
@@ -718,9 +731,9 @@ void CobaltContentBrowserClient::SetUpCobaltFeaturesAndParams(
   const bool use_safe_config =
       (config_type == ExperimentConfigType::kSafeConfig);
 
-  const base::Value::Dict& feature_map = experiment_config->GetDict(
+  const base::DictValue& feature_map = experiment_config->GetDict(
       use_safe_config ? kSafeConfigFeatures : kExperimentConfigFeatures);
-  const base::Value::Dict& param_map = experiment_config->GetDict(
+  const base::DictValue& param_map = experiment_config->GetDict(
       use_safe_config ? kSafeConfigFeatureParams
                       : kExperimentConfigFeatureParams);
 

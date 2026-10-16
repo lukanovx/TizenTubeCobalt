@@ -33,10 +33,11 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kCobaltMemoryPressureCooldown);
 BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
                                        kCobaltMemoryPressureCooldownSeconds);
 
-// When enabled, gates the CC image decode cache items limit via Finch feature
-// and parameter.
+// When enabled, gates the CC image decode cache items limit and size limit (in
+// MB) via Finch feature and parameters.
 BASE_EXPORT BASE_DECLARE_FEATURE(kCobaltCCImageCacheLimitItems);
 BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kCobaltCCImageCacheLimitItemsCount);
+BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kCobaltCCImageCacheLimitItemsMbs);
 
 // When enabled, gates the GPU memory budget via Finch feature and parameter.
 BASE_EXPORT BASE_DECLARE_FEATURE(kCobaltForceGpuMemAvailable);
@@ -92,6 +93,16 @@ BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
 BASE_EXPORT BASE_DECLARE_FEATURE(kCobaltMaxMemoryForPrepaint);
 BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
                                        kCobaltMaxMemoryForPrepaintPercentage);
+
+#if BUILDFLAG(IS_ANDROID)
+// When enabled, sets InProcessRendererThread to kDisplayCritical thread type
+// on Android, matching multi-process Chromium renderer main thread priority.
+// Disabled by default to enable controlled Finch experimentation
+// (--enable-features=CobaltAndroidDisplayCriticalInProcessRenderer).
+// This is strictly turned off / omitted on Starboard/Linux.
+BASE_EXPORT BASE_DECLARE_FEATURE(
+    kCobaltAndroidDisplayCriticalInProcessRenderer);
+#endif  // BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(IS_COBALT)
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kFeatureParamWithCache);
